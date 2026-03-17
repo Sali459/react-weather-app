@@ -12,8 +12,7 @@ export default function App() {
           This project is created by Saadia Ali and is open-sourced on{" "}
           <a
             href="https://github.com/Sali459/react-weather-app"
-            target="
-      _blank"
+            target="_blank"
           >
             GitHub
           </a>
