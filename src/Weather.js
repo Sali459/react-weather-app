@@ -1,55 +1,82 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 import "./Weather.css";
 
-export default function Weather() {
-  return (
-    <div className="Weather">
-      <form>
-        <div className="row">
-          <div className="col-9">
-            <input
-              type="search"
-              placeholder="Enter a city..."
-              className="form-control"
-              autoFocus="on"
-            />
+export default function Weather(props) {
+  const [weatherData, setWeatherData] = useState({ ready: false });
+  function handleResponse(response) {
+    console.log(response.data);
+    setWeatherData({
+      ready: true,
+      city: response.data.city,
+      date: "Wednesday 07:00",
+      description: response.data.condition.description,
+      iconURL:
+        "https://www.gstatic.com/weather/conditions/v1/svg/cloudy_light.svg",
+      temperature: response.data.temperature.current,
+      humidity: response.data.temperature.humidity,
+      wind: response.data.wind.speed,
+    });
+
+  }
+
+  if (weatherData.ready) {
+    return (
+      <div className="Weather">
+        <form>
+          <div className="row">
+            <div className="col-9">
+              <input
+                type="search"
+                placeholder="Enter a city..."
+                className="form-control"
+                autoFocus="on"
+              />
+            </div>
+            <div className="col-3">
+              <input
+                type="submit"
+                value="Search"
+                className="btn btn-primary w-100"
+              />
+            </div>
           </div>
-          <div className="col-3">
-            <input
-              type="submit"
-              value="Search"
-              className="btn btn-primary w-100"
-            />
+        </form>
+        <h1>{weatherData.city}</h1>
+        <ul>
+          <li>{weatherData.date}</li>
+          <li className="text-capitalize">{weatherData.description}</li>
+        </ul>
+        <div className="row mt-3">
+          <div className="col-6">
+            <div className="clearfix">
+              <img
+                src={weatherData.iconURL}
+                alt={weatherData.description}
+                className="float-left"
+              />
+              <span className="float-left">
+                <span className="temperature">
+                  {Math.round(weatherData.temperature)}
+                </span>
+                <span className="unit">°C</span>
+              </span>
+            </div>
           </div>
-        </div>
-      </form>
-      <h1>New York</h1>
-      <ul>
-        <li>Wednesday 07:00</li>
-        <li>Cloudy</li>
-      </ul>
-      <div className="row mt-3">
-        <div className="col-6">
-          <div className="clearfix">
-            <img
-              src="https://www.gstatic.com/weather/conditions/v1/svg/cloudy_light.svg"
-              alt="Cloudy"
-              className="float-left"
-            />
-            <span className="float-left">
-              <span className="temperature">12</span>
-              <span className="unit">°C</span>
-            </span>
+          <div className="col-6">
+            <ul>
+              <li>Humidity: {weatherData.humidity}%</li>
+              <li>Wind: {weatherData.wind} km/h</li>
+            </ul>
           </div>
-        </div>
-        <div className="col-6">
-          <ul>
-            <li>Precipitation: 2%</li>
-            <li>Humidity: 100%</li>
-            <li>Wind: 32 km/h</li>
-          </ul>
         </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    const apiKey = "a8boetdc4878122040379fe8f04a70c1";
+    let apiUrl = `https://api.shecodes.io/weather/v1/current?query=${props.defaultCity}&key=${apiKey}`;
+    axios.get(apiUrl).then(handleResponse);
+
+    return "Loading...";
+  }
 }
